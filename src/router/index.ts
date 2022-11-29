@@ -1,10 +1,23 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-const routes: Array<RouteRecordRaw> =[{
-    path: '/index',
-    name: 'index',
-   
-    component: () => import(/* webpackChunkName: "about" */ '../views/login/index.vue')
-  }
+const routes: Array<RouteRecordRaw> =[
+  {
+    path:"/app",
+    name:"app",
+    component: () => import('../../src/App.vue'),
+    children:[
+      {
+        path:"/example",
+        name:"example",
+        component: () => import('../views/login/example.vue')
+      },
+      
+      {
+        path: '/index',
+        name: 'index',
+        component: () => import('../views/login/index.vue')
+      }
+    ]
+  },
  ]
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

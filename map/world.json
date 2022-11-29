@@ -1,0 +1,27 @@
+{
+    "region": [
+      {"name": "US", "confirm":2376263},
+      {"name": "Brazil", "confirm":1188631},
+      {"name": "Russia", "confirm":606043},
+      {"name": "India", "confirm":456183},
+      {"name": "United Kingdom", "confirm":308336},
+      {"name": "Peru", "confirm":264689},
+      {"name": "Chile", "confirm":254416},
+      {"name": "Spain", "confirm":247086},
+      {"name": "Italy", "confirm":239410},
+      {"name": "Iran", "confirm":212501},
+      {"name": "France", "confirm":197885 },
+      {"name": "Germany", "confirm":192871},
+      {"name": "Mexico", "confirm":191410 },
+      {"name": "Pakistan", "confirm":188926},
+      {"name": "Saudi Arabia", "confirm":167267},
+      {"name": "Bangladesh", "confirm":122660},
+      {"name": "South Africa", "confirm":111796 },
+      {"name": "Canada", "confirm":104073},
+      {"name": "Qatar", "confirm":90778},
+      {"name": "China", "confirm":84658},
+      {"name": "Colombia", "confirm":73760},
+      {"name": "Sweden", "confirm":62324}
+    ]
+  }
+  

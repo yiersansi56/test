@@ -16,19 +16,21 @@
     class="demo-ruleForm"
   >
   
-    <el-form-item  prop="pass">
+    <el-form-item  prop="username">
       <label>username</label>
       <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
     </el-form-item>
-    <el-form-item  prop="checkPass">
+    <el-form-item  prop="password">
       <label>password</label>
       <el-input
         v-model="ruleForm.password"
         type="password"
         autocomplete="off"
+        minlength="6"
+        maxlength="15"
       />
     </el-form-item>
-    <el-form-item  prop="age" v-show="model==='register'">
+    <el-form-item  prop="passwords" v-show="model==='register'">
       <label>confirm</label>
       <el-input v-model="ruleForm.passwords" type="password" />
     </el-form-item>
@@ -50,7 +52,9 @@
 //创建复杂类型
   import { reactive, ref } from 'vue'
   import type { FormInstance } from 'element-plus'
-
+  import * as ck from "../../utils/verfifcation.js"
+  import link from "../../api/Link.js"
+  import apiUrl from "../../api/url.js"
   const MenuData=reactive([
     {txt:"登录",current:true,type:"login"},
     {txt:"注册",current:false,type:"register"}
@@ -69,39 +73,41 @@
 
 const ruleFormRef = ref<FormInstance>()
 
-const checkAge = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error('Please input the age'))
-  }
-  setTimeout(() => {
-    if (!Number.isInteger(value)) {
-      callback(new Error('Please input digits'))
-    } else {
-      if (value < 18) {
-        callback(new Error('Age must be greater than 18'))
-      } else {
-        callback()
-      }
-    }
-  }, 1000)
-}
-
-const validatePass = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input the password'))
-  } else {
-    if (ruleForm.checkPass !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value.validateField('checkPass', () => null)
-    }
+const checkUser = (rule: any, value: any, callback: any) => {
+ 
+ if (!value) {
+    return callback(new Error('Please input the username'))
+  }else if(ck.CKUsername(value)){
+    return callback(new Error("用户名格式不正确！"))
+  }else{
     callback()
   }
 }
-const validatePass2 = (rule: any, value: any, callback: any) => {
+
+
+
+
+
+const validatePass = (rule: any, value: any, callback: any) => {
+  
   if (value === '') {
-    callback(new Error('Please input the password again'))
-  } else if (value !== ruleForm.pass) {
-    callback(new Error("Two inputs don't match!"))
+    callback(new Error('密码不能为空'))
+  } else if(ck.CKPass(value)){
+    callback(new Error('密码格式有误必须在6至15位的字母+数字'))
+    }else{
+    callback()
+  }
+}
+
+const validatePass2 = (rule: any, value: any, callback: any) => {
+  if(model.value==="login"){
+    callback()
+  }
+
+  if (value === '') {
+    callback(new Error('重复密码不能为空'))
+  } else if (value !== ruleForm.password) {
+    callback(new Error("两次密码必须相同"))
   } else {
     callback()
   }
@@ -117,9 +123,9 @@ const ruleForm = reactive({
 })
 
 const rules = reactive({
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  checkPass: [{ validator: validatePass2, trigger: 'blur' }],
-  age: [{ validator: checkAge, trigger: 'blur' }],
+  password: [{ validator: validatePass, trigger: 'blur' }],
+  passwords: [{ validator: validatePass2, trigger: 'blur' }],
+  username: [{ validator: checkUser, trigger: 'blur' }],
 })
 
 const submitForm = (formEl: FormInstance | undefined) => {
@@ -127,6 +133,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       console.log('submit!')
+
+link(apiUrl.one).then((ok:any)=>{
+  console.log(ok)
+})
+
     } else {
       console.log('error submit!')
       return false

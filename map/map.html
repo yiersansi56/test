@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>疫情可视化</title>
+    <script src="js/axios.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/vue.js"></script>
+    
+    
+<style>
+html,body{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    background-color: black;
+}
+#webgis{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+/*上部分样式*/
+.before{
+    display: flex;
+    flex: 1 1 auto;
+}
+/*上部左样式*/
+.before_left{
+width: 20vw;
+display: flex;
+flex-direction: column;
+}
+.before_left_pie{
+    height: 200px;
+    flex: 1 1 auto;
+}
+.before_left_line{
+    height: 200px;
+    flex: 1 1 auto;
+}
+.before_center{
+    flex: 1 1 auto;
+}
+
+.before_right{
+    width: 20vw;
+    color:#43d0d6;
+ 
+}
+.before_right_title{
+    text-align: center;
+}
+
+.before_right_city{
+    border: 1px solid  #43d0d6;
+    margin: .4vw;
+    font-weight: lighter;
+    padding: .5vw;
+    border-radius: 5px;
+    box-shadow: 0 0 2px rgba(220,220,220,0.8);
+    cursor: pointer;
+    font-size: 13px;
+}
+.before_right_city:hover{
+    color: #c23531;
+    transform:  translate(0px, -1px);
+    box-shadow: 0 0 10px #43d0d6;
+    transition: all .5ms ease;
+}
+
+/*底部柱状图样式*/
+.bottom{
+  min-height: 14vw;
+  max-height: 20vw;
+}
+footer {
+    height: 50px;
+    padding: 2vw 0;
+    font-size: 1vw;
+    font-weight: lighter;
+    text-align: center;
+    color: #43d0d6;
+}
+</style>
+</head>
+<body>
+<div id="webgis">
+<div class="before">
+    <div class="before_left">
+           <div class="before_left_pie" ></div>
+           <div class="before_left_line"></div>
+    </div>
+    <div class="before_center" >
+
+    </div>
+    <div class="before_right">
+       <div class="before_right_title">国家</div>
+        <div class="before_right_city_div">
+            <div class="before_right_city" v-for="(item,index) in worldConfirm"  v-if="index<indexEndNumber&&index>=indexStartNumber?true:false"><span>第{{index+1}}:</span> {{item.name}} <span style="color: #c23531">{{item.confirm}}</span>人确诊</div>
+            </div>
+    </div>
+</div>
+<div class="bottom" id="bottom"></div>
+    <footer >
+        <p>Copyright © 2020 Kinghiee. All rights reserved. </p>
+        <img src="img/police.png">
+        <a href="http://www.beian.miit.gov.cn/" style="text-decoration:none;">豫ICP备19011386号-2</a>
+    </footer>
+</div>
+<script>
+    let app=new Vue({
+        el:"#webgis",
+        data:{
+           totalData:null,
+           totalCityConfirmData:{},
+           indexStartNumber:0,
+           indexEndNumber:10,
+           worldConfirm:{},
+           chinaTotal:{},
+           mapChart:null,
+           histogramChart:null,
+           geoCoordMap:{
+                   "北京": [116.3979471, 39.9081726],
+                   "上海": [121.4692688, 31.2381763] ,
+                   "天津": [117.2523808, 39.1038561] ,
+                   "重庆": [106.548425, 29.5549144] ,
+                   "河北": [114.4897766, 38.0451279] ,
+                   "山西": [112.5223053, 37.8357424] ,
+                   "辽宁": [123.4116821, 41.7966156] ,
+                   "吉林": [125.3154297, 43.8925629] ,
+                  "黑龙江": [126.6433411, 45.7414932],
+                   "浙江": [120.1592484, 30.265995],
+                   "福建": [119.2978134, 26.0785904],
+                   "山东": [117.0056, 36.6670723],
+                   "河南": [113.6500473, 34.7570343],
+                   "湖北": [114.2919388, 30.5675144] ,
+                   "湖南": [112.9812698, 28.2008247],
+                   "广东": [113.2614288, 23.1189117] ,
+                   "海南": [110.3465118, 20.0317936] ,
+                   "四川": [104.0817566, 30.6610565] ,
+                   "贵州": [106.7113724, 26.5768738],
+                   "云南": [102.704567, 25.0438442] ,
+                   "江西": [115.8999176, 28.6759911],
+                   "陕西": [108.949028, 34.2616844],
+                   "青海": [101.7874527, 36.6094475],
+                   "甘肃": [103.7500534, 36.0680389],
+                   "广西": [108.3117676, 22.8065434],
+                   "新疆": [87.6061172, 43.7909393],
+                   "内蒙古": [111.6632996, 40.8209419],
+                   "西藏": [91.1320496, 29.657589],
+                   "宁夏": [106.2719421, 38.4680099],
+                   "台湾": [120.9581316, 23.8516062],
+                   "香港": [114.139452, 22.391577],
+                   "澳门": [113.5678411, 22.167654],
+                   "安徽": [117.2757034, 31.8632545],
+                   "江苏": [118.7727814, 32.047615]
+            },
+             provinces:{//各省市中文拼音
+                '台湾': 'taiwan',
+                '河北': 'hebei',
+                '山西': 'shanxi',
+                '辽宁': 'liaoning',
+                '吉林': 'jilin',
+                '黑龙江': 'heilongjiang',
+                '江苏': 'jiangsu',
+                '浙江': 'zhejiang',
+                '安徽': 'anhui',
+                '福建': 'fujian',
+                '江西': 'jiangxi',
+                '山东': 'shandong',
+                '河南': 'henan',
+                '湖北': 'hubei',
+                '湖南': 'hunan',
+                '广东': 'guangdong',
+                '海南': 'hainan',
+                '四川': 'sichuan',
+                '贵州': 'guizhou',
+                '云南': 'yunnan',
+                '陕西': 'shanxi1',
+                '甘肃': 'gansu',
+                '青海': 'qinghai',
+                '新疆': 'xinjiang',
+                '广西': 'guangxi',
+                '内蒙古': 'neimenggu',
+                '宁夏': 'ningxia',
+                '西藏': 'xizang',
+                '北京': 'beijing',
+                '天津': 'tianjin',
+                '上海': 'shanghai',
+                '重庆': 'chongqing',
+                '香港': 'xianggang',
+                '澳门': 'aomen'
+            }
+        },
+        methods:{
+            getData(){
+              axios.get("./getOnsInfo.json").then(res=>{
+                  let arr=new Array();//中间处理的数组
+                  console.log(JSON.parse(res.data.data));
+                  let sum=JSON.parse(res.data.data);//转为json
+                      sum.areaTree[0].children.forEach((item)=>{
+                          //console.log(item);
+                          arr.push({"name":item.name,"value":item.total.confirm,"children":item.children,"total":item.total,"data":{"name":item.name,"value":[this.geoCoordMap[item.name].concat(item.total.confirm)],}});
+                      });
+                      this.totalCityConfirmData=arr.sort(function (a,b) {//排序后，赋值数据
+                          return b.value-a.value;
+                      });
+                  this.totalData=sum.areaTree[0];
+                  this.chinaTotal=sum.chinaTotal;
+              });
+              axios.get("world.json").then(res=>{
+                  this.worldConfirm=res.data.region;
+              });
+
+            },
+            createPie(chinaTotal){//生成饼图
+               let data=Array();
+               // console.log(chinaTotal);
+                data.push({"name":"确诊病例","value":chinaTotal.confirm});
+                data.push({"name":"死亡病例","value":chinaTotal.dead});
+                data.push({"name":"重症病例","value":chinaTotal.importedCase});
+                data.push({"name":"已治愈","value":chinaTotal.heal});
+                data.push({"name":"疑似病例","value":chinaTotal.suspect});
+                let pieChart=echarts.init(document.getElementsByClassName("before_left_pie")[0]);
+                let option={
+                    tooltip: {
+                        trigger: 'item',
+                        formatter:'{b}:{c}人',
+                        textStyle:{
+                            color:"#43d0d6"
+                        }
+                    },
+                    color : [ '#AE0000', '#696969', '#800000', '#006400', '#DAA520' ],
+                    series: [
+                        {
+                            type: 'pie',
+                            radius: ['50%', '70%'],
+                            data:data,
+                            clockwise:true,
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: false,
+                                position: 'center',
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    fontSize: '20',
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            animationEasing: 'elasticOut',
+                            animationDelay: function (idx) {
+                                return Math.random() * 200;
+                            }
+                        }
+                    ]
+                };
+                 pieChart.setOption(option);
+            },
+            createLine(){
+              let lineChart=echarts.init(document.getElementsByClassName("before_left_line")[0]);
+              let option = {
+                   grid:{
+                     show:false,
+                     top:"5%",
+                     left:"20%",
+                     height: "85%",
+
+                   },
+                  tooltip: {
+                      trigger: 'item',
+                      formatter:'周{b}:{c}人',
+                      textStyle:{
+                          color:"#43d0d6"
+                      }
+                  },
+                    xAxis: {
+                        type: 'category',
+                        data: ['一', '二', '三', '四', '五', '六', '日'],
+                        axisLine:{
+                            lineStyle:{
+                                color:"#43d0d6"
+                            }
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine:{
+                            lineStyle:{
+                                color:"#43d0d6"
+                            }
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                    },
+                    series: [{
+                        data: [85099,85109,85125,85150,85180,85210,85260],
+                        type: 'line',
+                        smooth: true
+                    }]
+                };
+              lineChart.setOption(option);
+            },
+            createMap(getData,map,labelShow){//创建中国地图
+                let title="";
+                if(map=="china")
+                {
+                    title="中国";
+                }else {
+                    title=map;
+                }
+                let data=Array();
+                if(getData==null)
+                {
+                    data=null;
+                }else {
+                    for (let index in getData){//数据转换
+                        data.push({name:getData[index].data.name,value:[getData[index].data.value[0][0],getData[index].data.value[0][1],getData[index].data.value[0][2]]});
+                    }
+                }
+
+                console.log(map);
+                this.mapChart=echarts.init(document.getElementsByClassName("before_center")[0]);
+                document.getElementsByClassName("before_center")[0].oncontextmenu = function(){return false;};//阻止右键弹出
+                let option={
+                    title: [
+                        {
+                            text: title+"疫情可视化",
+                            left: 'center',
+                            textStyle:{
+                                color: '#ccc'
+                            },
+                        }
+                    ],
+                    tooltip: {
+                        trigger: 'item',
+                            formatter: function(data){
+                        },
+                        backgroundColor:'rgba(50,50,50,0.7)'
+                    },
+                      color:['#AE0000'],
+                      geo:  {
+                            name: map,
+                            map: map,//配置中国地图
+                            type:'map',
+                            nameMap: {
+                              china: '中国'
+                           },
+                            selectedMode:"single",
+                            itemStyle: {
+                                normal: {
+                                    areaColor: "#101f32",
+                                    borderWidth: 1.1,
+                                    textStyle: {
+                                        color: "#fff"
+                                    },
+                                    borderColor: "#43d0d6" //地图边框颜色
+                                },
+                                emphasis: {
+                                    color: "#fff",
+                                    areaColor: "#069"
+                                }
+                            },
+                            label: {
+                                normal: { //静态的时候展示样式
+                                    show: labelShow, //是否显示地图省份得名称
+                                    textStyle: {
+                                        color: "#43d0d6",
+                                        fontSize: 10,
+                                        fontFamily: "Arial"
+                                    }
+                                },
+                                emphasis: { //动态展示的样式
+                                    color:'#43d0d6',
+                                },
+                            },
+                        },
+                        series:[
+                            {
+                                type: 'effectScatter',//带有涟漪特效动画的散点（气泡）图。利用动画特效可以将某些想要突出的数据进行视觉突出。
+                                coordinateSystem: 'geo',//该系列使用的坐标系
+                                zlevel: 2,
+                                rippleEffect: {//涟漪特效相关配置
+                                    brushType: 'stroke'
+                                },
+                                symbolSize: function (val) {//标记的大小
+                                    return val[2] / 2500;
+                                },
+                                itemStyle: {
+                                    color: '#AE0000'
+                                },
+                                data:data
+                            }
+                        ],
+                    animationDuration: 1500,
+                    animationEasing: 'sinusoidalIn',
+                    animationDurationUpdate: 1500
+
+                };
+                this.mapChart.setOption(option);
+            },
+            createHistogram(getData){//生成柱状图
+                let data=Array();
+                for (let index in getData){//数据转换
+                    data.push(getData[index].name);
+                }
+                this.histogramChart=echarts.init(document.getElementsByClassName("bottom")[0]);
+                let option = {
+                    grid:{
+                     show:false,
+                     left:"4%",
+                     top:"4%",
+                     height:"75%",
+                     width:"95%"
+                    },
+                    xAxis: {
+                        type: 'category',
+                        offset:12,
+                        boundaryGap:true,
+                        axisLine:{
+                            lineStyle:{
+                                color:"#43d0d6"
+                            }
+                        },
+                        axisTick:{
+                            show:true,
+                            interval:2,
+                            length: 5,
+                            alignWithLabel:true
+                        },
+                        axisPointer:{
+                           show:true,
+                           type:"shadow",
+                           snap:true,
+                           label:{//坐标轴指示器的文本标签
+                               show:true,
+                               formatter:function (data) {
+                                   return '${data.value}:确诊:${data.seriesData[0].value}人'
+                               }
+                            }
+                        },
+                        data:data
+                    },
+                    yAxis: {
+                        splitNumber: 5,
+                        axisLine:{
+                            lineStyle:{
+                                color:"#43d0d6"
+                            }
+                        },
+                        axisTick:{
+                            show:false,
+                            inside:true,
+                            length : 10,
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                    },
+                    dataZoom:[
+                        {
+                            show: false,
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type:"inside",
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            show: false,
+                            yAxisIndex: 0,
+                            filterMode: 'empty',
+                            width: 30,
+                            height: '80%',
+                            showDataShadow: false,
+                        }
+                    ],
+                    series: [{
+                        type: 'bar',
+                        data: getData,
+                        barMaxWidth:"30%",//设置最大宽度
+                        animationEasing: 'cubicOut',
+                    }]
+                };
+                this.histogramChart.setOption(option);
+                window.onresize = function () {
+
+                }
+            }
+        },
+        watch:{
+            totalCityConfirmData(){
+                this.createHistogram(this.totalCityConfirmData);
+                this.createPie(this.chinaTotal);
+                this.createMap(this.totalCityConfirmData,'china',false);
+                this.mapChart.on('click', (params)=>{
+                    let arr=new Array();//用于变换柱形图的数据
+                    console.log(params);
+                    this.mapChart.dispatchAction({
+                        type: 'highlight',
+                        name:params.name
+                    });
+                     console.log(params);
+                    if (params.name in this.provinces) {//选着的区域是否在provinces中，如果在进入二级地图
+                        //点击地图，柱形图变换
+                        this.totalCityConfirmData.forEach((item)=>{
+                            if(params.name==item.name)
+                            {
+                                item.children.forEach((item)=>{
+                                    arr.push({"name":item.name,"value":item.total.confirm});
+                                });
+                                this.createPie(item.total);//饼形图重画
+
+
+                            }
+                        });
+                               //二级地图
+                        axios.get('./map/province/${this.provinces[params.name]}.json').then((res)=>{//获取二级数据
+                                console.log(params.name);
+                               echarts.registerMap(params.name, res.data);//注册可用的地图
+
+                            this.createMap(null,params.name,true);
+
+                        });
+                        this.createHistogram(arr.sort(function (a,b) {return b.value-a.value;}));//柱状图从新生成
+                        }else {
+                           this.createMap(this.totalCityConfirmData,'china');
+                        }
+
+                   });
+                this.mapChart.on('contextmenu',(params)=>{
+                    console.log(params);
+                });
+            }
+        },
+        created(){
+            this.getData();
+        },
+        mounted(){
+            //this.createPie();
+            this.createLine();
+
+        }
+
+    })
+</script>
+</body>
+</html>
