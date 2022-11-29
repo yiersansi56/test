@@ -1,0 +1,15 @@
+{
+  "name": "cov",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "author": "crazybox521",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "express": "^4.17.3"
+  }
+}
