@@ -1,7 +1,7 @@
 module.exports = {
 	root: true,
 	env: {
-		node: true，
+		node: true,
 		'vue/setup-compiler-macros': true
 	},
 	'extends': [

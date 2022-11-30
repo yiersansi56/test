@@ -32,7 +32,13 @@
     </el-form-item>
     <el-form-item  prop="passwords" v-show="model==='register'">
       <label>confirm</label>
-      <el-input v-model="ruleForm.passwords" type="password" />
+       <el-input
+        v-model="ruleForm.passwords"
+        type="password"
+        
+        minlength="6"
+        maxlength="15"
+      />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" class="login-button" @click="submitForm(ruleFormRef)"
@@ -50,16 +56,21 @@
 
 <script lang="ts" setup >
 //创建复杂类型
-  import { reactive, ref } from 'vue'
+  import { reactive, ref ,onMounted} from 'vue'
   import type { FormInstance } from 'element-plus'
   import * as ck from "../../utils/verfifcation.js"
   import link from "../../api/Link.js"
   import apiUrl from "../../api/url.js"
+  import {useRouter} from "vue-router"
+  let router=useRouter()
   const MenuData=reactive([
     {txt:"登录",current:true,type:"login"},
     {txt:"注册",current:false,type:"register"}
   ]);
 
+  onMounted(()=>{
+    console.log(process.env.VUE_APP_API)
+  })
   let model=ref("login")
 
   let clickMenu=(item)=>{
@@ -132,11 +143,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      console.log('submit!')
+     if(model.value==="login"){
+       console.log("登录");
+     }else{
 
-link(apiUrl.one).then((ok:any)=>{
-  console.log(ok)
+       let data={
+         name:ruleForm.username,
+         pwd:ruleForm.password
+       }
+  link(apiUrl.register,"POST",data).then((ok:any)=>{
+  console.log(ok);
 })
+     }
+
+
 
     } else {
       console.log('error submit!')

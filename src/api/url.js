@@ -1,4 +1,4 @@
 let apiUrl={
-    one:"http://localhost:8880/one"
+   register:"/register"
 }
 export default apiUrl

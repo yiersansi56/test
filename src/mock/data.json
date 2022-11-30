@@ -1,9 +1,6 @@
 {
-    "one":[
-        {"name":"ls"},
-        {"name":"hyz"},
-        {"name":"qxx"},
-        {"name":"lgw"}
-    ]
+    "register":[{
+        "id":"1","name":"admin@163.com","pwd":"admin123"
+    }]
     
 }

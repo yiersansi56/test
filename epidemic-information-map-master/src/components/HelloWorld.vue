@@ -28,7 +28,7 @@
 import * as echarts from 'echarts'
 const { province, city } = require('province-city-china/data')
 import { VueLoading } from 'vue-loading-template'
-import { getCovData } from '@/api/api'
+import { getCovData } from '../api/api.js'
 
 export default {
   name: 'hello-world',
@@ -337,7 +337,7 @@ export default {
   }
 }
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
 /* 工具栏 */
 .tool {
   height: 30px;
