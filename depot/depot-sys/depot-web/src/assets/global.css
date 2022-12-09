@@ -1,0 +1,206 @@
+*{
+    margin: 0;
+    padding: 0;
+
+}
+html{
+/*overflow: clip;*/
+    overflow: auto;
+}
+@font-face {
+    font-family: newfont;
+    src: url("../assets/免費香港楷書.ttf");
+}
+/*  登陆部分  */
+.input{
+    margin-left:0px ;
+    margin-bottom: 25px;
+}
+.input .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 300px;
+    background-color: rgba(254,254,254,0.5);
+}
+.input .el-form-item__error{
+    margin-left: 580px;
+    margin-top: -30px;
+}
+.button .el-button--primary{
+    width: 200px;
+    height: 50px;
+    border-radius: 40px;
+    background-color: rgba(200,254,254,0.3) ;
+    border: 2px solid white;
+    color: lightblue;
+}
+.button .el-button--primary:hover{
+    background-color: rgba(200,229,254,0.1) ;
+    height:60px ;
+    width: 220px;
+}
+.check{
+    margin-left: -60px;
+}
+.check .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 150px;
+    background-color: rgba(254,254,254,0.5);
+}
+.forget .el-dialog__title{
+    color: #666666;
+    font-size: 30px;
+    letter-spacing: 3px;
+    opacity: 0.6;
+}
+.forget .el-dialog{
+    display: inline-block;
+    width:500px;
+    height: 500px;
+    box-shadow: inset 5px 10px 10px rgba(0, 0, 0, 0.05),
+    5px 10px 5px rgba(0,0,0,0.01),
+    10px 10px 10px rgba(0,0,0,0.05),
+    inset -10px -10px 15px rgba(254, 254, 254, 0.9);
+    border-radius:38% 62% 41% 59% / 49% 30% 70% 51%   ;
+    transition: 0.8s;
+    position: absolute;
+    padding-top: 30px;
+    margin-bottom: 200px;
+    margin-left: 700px;
+    background-color: rgba(254,254,254,0.7);
+    color: lightcoral;
+}
+.forget .el-dialog .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 300px;
+    background-color: rgba(254,254,254,0.5);
+}
+
+ /*  注册部分  */
+
+
+.ipt .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 250px;
+    background-color: rgba(254,254,254,0.5);
+}
+.passwords .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 250px;
+    background-color: rgba(254,254,254,0.5);
+}
+.passwords label{
+    margin-left: 10px;
+}
+.check1 label{
+    margin-left: 25px;
+}
+.ipt .el-form-item__error{
+    margin-left: 45px;
+}
+.check1 .el-input__inner{
+    border-radius: 20px;
+    height: 40px;
+    width: 150px;
+    background-color: rgba(254,254,254,0.5);
+
+}
+.passwords .el-form-item__error{
+    margin-left: 85px;
+}
+.passwords,ipt .el-form-item__error{
+
+}
+.btn .el-button--primary{
+    width: 200px;
+    height: 50px;
+    margin-left: 80px;
+    border-radius: 40px;
+    background-color: rgba(200,254,254,0.3) ;
+    border: 2px solid white;
+    color: lightblue;
+}
+.btn .el-button--primary:hover{
+    background-color: rgba(200,229,254,0.1) ;
+    height:60px ;
+    width: 220px;
+}
+/*  菜单栏  */
+.main {
+    height: 900px;
+    width: 100%;
+    overflow:auto;
+    border-radius: 2px;
+}
+.main .el-main{
+    overflow:auto;
+}
+.menu .el-menu-item{
+
+}
+.el-table .warning-row {
+    background: #c3cce5;
+}
+
+.el-table .success-row {
+    background: #f0f9eb;
+}
+.el-table .error-row {
+    background: #f8c9c9;
+}
+/*.menu .el-menu-item:nth-last-child(1){*/
+/*    background-image: url("../assets/imgs/menu.jpg");*/
+/*    background-size: cover;*/
+/*}*/
+/*.menu .el-menu-item:nth-last-child(2){*/
+/*    background-image: url("../assets/imgs/menu1.jpg");*/
+/*    background-size: cover;*/
+/*}*/
+/*.menu .el-menu-item:nth-last-child(3){*/
+/*    background-image: url("../assets/imgs/menu2.jpg");*/
+/*    background-size: cover;*/
+/*}*/
+/*.menu .el-menu-item:nth-last-child(4){*/
+/*    background-image: url("../assets/imgs/menu3.jpg");*/
+/*    background-size: cover;*/
+/*}*/
+/*.menu .el-menu-item:nth-last-child(5){*/
+/*    background-image: url("../assets/imgs/menu4.jpg");*/
+/*    background-size: cover;*/
+/*}*/
+.el-header{
+    background-image: url("../assets/imgs/menu.jpg");
+    background-size: cover;
+}
+.el-descriptions__title{
+    font-size: 50px;
+    letter-spacing: 20px;
+    width: 200px;
+
+}
+.el-descriptions .is-bordered .el-descriptions-item__cell{
+    border: none;
+    border-bottom: 3px solid black;
+    padding-top: 60px;
+    font-size: 15px;
+
+}
+
+.el-descriptions__body{
+    background-color: transparent;
+    padding: 20px;
+    width: 400px;
+
+
+}
+.el-descriptions-item__label.is-bordered-label{
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+
+}
