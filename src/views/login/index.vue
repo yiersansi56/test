@@ -181,6 +181,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   }
   html,#app,body{
     height: 100%;
+    
   }
   .menu-tab{
     text-align: center;

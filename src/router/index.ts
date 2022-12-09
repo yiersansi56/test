@@ -31,7 +31,22 @@ const routes: Array<RouteRecordRaw> =[
         path: '/qrcode',
         name: 'qrcode',
         component: () => import('../views/login/qrcode.vue')
-      }
+      },
+      {
+        path: '/channel',
+        name: 'channel',
+        component: () => import('../views/login/channel.vue')
+      },
+      {
+        path: '/tabBarItem',
+        name: 'tabBarItem',
+        component: () => import('../views/login/tabBarItem.vue')
+      },
+      {
+        path: '/tabBar',
+        name: 'tabBar',
+        component: () => import('../views/login/tabBar.vue')
+      },
     ]
   },
  ]
